@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "data" {
   # bucket does not have versioning
   bucket        = "${local.resource_prefix.value}-data"
   region        = "us-west-2"
-  acl           = "private"
+  acl           = "public-read"
   force_destroy = true
   tags = {
     Name        = "${local.resource_prefix.value}-data"
@@ -14,11 +14,13 @@ resource "aws_s3_bucket" "data" {
 }
 
 
-resource "aws_s3_bucket_versioning" "data" {
-  bucket = aws_s3_bucket.data.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
+  bucket = aws_s3_bucket.data.bucket
 
-  versioning_configuration {
-    status = "Enabled"
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
+    }
   }
 }
 
